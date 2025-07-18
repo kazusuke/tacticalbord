@@ -41,7 +41,7 @@
       </div>
       <div class="bench-area">
         <button class="reset-btn" onclick="movePlayersToFormation(2)">ピッチ内選手を初期配置に戻す</button>
-        <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper()">↑上の状態をコピー</button>
+        <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper(2)">↑上の状態をコピー</button>
         <button class="reset-btn" style="background:#f39c12;margin-top:8px;" onclick="saveStates()">保存</button>
         <div class="bench-title">控え選手</div>
         <div class="bench-list" id="bench2"></div>
@@ -62,7 +62,7 @@
       </div>
       <div class="bench-area">
         <button class="reset-btn" onclick="movePlayersToFormation(3)">ピッチ内選手を初期配置に戻す</button>
-        <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper()">↑上の状態をコピー</button>
+        <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper(3)">↑上の状態をコピー</button>
         <button class="reset-btn" style="background:#f39c12;margin-top:8px;" onclick="saveStates()">保存</button>
         <div class="bench-title">控え選手</div>
         <div class="bench-list" id="bench3"></div>
@@ -83,7 +83,7 @@
       </div>
       <div class="bench-area">
         <button class="reset-btn" onclick="movePlayersToFormation(4)">ピッチ内選手を初期配置に戻す</button>
-        <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper()">↑上の状態をコピー</button>
+        <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper(4)">↑上の状態をコピー</button>
         <button class="reset-btn" style="background:#f39c12;margin-top:8px;" onclick="saveStates()">保存</button>
         <div class="bench-title">控え選手</div>
         <div class="bench-list" id="bench4"></div>
@@ -740,16 +740,17 @@ function saveStates() {
   localStorage.setItem('formationStates', JSON.stringify(states));
 }
 
-// 上の状態をコピーする関数
-function copyFromUpper() {
-  // states[0]（上のボード）の状態をstates[1]（下のボード）にコピー
-  states[1].playersOnField = [...states[0].playersOnField];
-  states[1].playerPositions = JSON.parse(JSON.stringify(states[0].playerPositions));
-  states[1].suspensionPlayers = [...states[0].suspensionPlayers];
-  
-  // 下のボード（idx=2）を再描画
-  render(2);
-  
+// 上の状態をコピーする関数（任意のidxに対応）
+function copyFromUpper(idx) {
+  if (idx <= 1) return; // 一番上はコピー元がない
+  // states[idx-2]（上のボード）の状態をstates[idx-1]（下のボード）にコピー
+  states[idx-1].playersOnField = [...states[idx-2].playersOnField];
+  states[idx-1].playerPositions = JSON.parse(JSON.stringify(states[idx-2].playerPositions));
+  states[idx-1].suspensionPlayers = [...states[idx-2].suspensionPlayers];
+
+  // 下のボード（idx）を再描画
+  render(idx);
+
   // 状態を保存
   saveStates();
 }
