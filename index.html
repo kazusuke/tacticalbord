@@ -409,11 +409,19 @@ function render(idx) {
 
 // 合計出場時間を計算して表示する関数（出場時間の長い順に並べる）
 function showTotalPlayTime() {
+  // ここで一度内容をクリア
+  document.getElementById('total-time-area').innerHTML = '';
+
   // 各フィールドで出場している選手IDを集計
   const playerTimes = {};
+  // 1フィールドの出場時間（分）
+  const timePerField = 15;
+  // 各フィールドで重複なくカウント
   for (let i = 0; i < 4; i++) {
-    states[i].playersOnField.forEach(pid => {
-      playerTimes[pid] = (playerTimes[pid] || 0) + 15; // 1フィールド15分
+    // そのフィールドで出場している選手IDを一意に
+    const uniquePids = Array.from(new Set(states[i].playersOnField));
+    uniquePids.forEach(pid => {
+      playerTimes[pid] = (playerTimes[pid] || 0) + timePerField;
     });
   }
   // 出場時間の長い順にソート
@@ -776,11 +784,19 @@ function loadStates() {
 
 // 合計出場時間を計算して表示する関数
 function showTotalPlayTime() {
+  // ここで一度内容をクリア
+  document.getElementById('total-time-area').innerHTML = '';
+
   // 各フィールドで出場している選手IDを集計
   const playerTimes = {};
+  // 1フィールドの出場時間（分）
+  const timePerField = 15;
+  // 各フィールドで重複なくカウント
   for (let i = 0; i < 4; i++) {
-    states[i].playersOnField.forEach(pid => {
-      playerTimes[pid] = (playerTimes[pid] || 0) + 15; // 1フィールド15分
+    // そのフィールドで出場している選手IDを一意に
+    const uniquePids = Array.from(new Set(states[i].playersOnField));
+    uniquePids.forEach(pid => {
+      playerTimes[pid] = (playerTimes[pid] || 0) + timePerField;
     });
   }
   // 出場時間の長い順にソート
