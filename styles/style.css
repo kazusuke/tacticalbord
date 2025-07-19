@@ -301,3 +301,14 @@ body {
       .bench-area { min-width: unset; padding: 8px 2px; }
       .reset-btn { font-size: 0.95em; padding: 7px 10px; }
     }
+    .field-number {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  font-size: 4.2em;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 2px 2px 6px #000a;
+  z-index: 20;
+  pointer-events: none;
+}
