@@ -23,8 +23,8 @@
       <div class="bench-area">
         <button class="reset-btn" onclick="movePlayersToFormation(1)">ピッチ内選手を初期配置に戻す</button>
         <div style="margin-top:8px; display:flex; gap:4px;">
-          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation4231(1)">4-2-3-1</button>
-          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation442(1)">4-4-2</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1; min-width:70px; white-space:nowrap;" onclick="setFormation4231(1)">4-2-3-1</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1; min-width:70px; white-space:nowrap;" onclick="setFormation442(1)">4-4-2</button>
         </div>
         <button class="reset-btn" style="background:#f39c12;margin-top:8px;" onclick="saveStates()">保存</button>
         <div class="bench-title">控え選手</div>
@@ -48,8 +48,8 @@
       <div class="bench-area">
         <button class="reset-btn" onclick="movePlayersToFormation(2)">ピッチ内選手を初期配置に戻す</button>
         <div style="margin-top:8px; display:flex; gap:4px;">
-          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation4231(2)">4-2-3-1</button>
-          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation442(2)">4-4-2</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1; min-width:70px; white-space:nowrap;" onclick="setFormation4231(2)">4-2-3-1</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1; min-width:70px; white-space:nowrap;" onclick="setFormation442(2)">4-4-2</button>
         </div>
         <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper(2)">↑上の状態をコピー</button>
         <button class="reset-btn" style="background:#f39c12;margin-top:8px;" onclick="saveStates()">保存</button>
@@ -74,8 +74,8 @@
       <div class="bench-area">
         <button class="reset-btn" onclick="movePlayersToFormation(3)">ピッチ内選手を初期配置に戻す</button>
         <div style="margin-top:8px; display:flex; gap:4px;">
-          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation4231(3)">4-2-3-1</button>
-          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation442(3)">4-4-2</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1; min-width:70px; white-space:nowrap;" onclick="setFormation4231(3)">4-2-3-1</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1; min-width:70px; white-space:nowrap;" onclick="setFormation442(3)">4-4-2</button>
         </div>
         <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper(3)">↑上の状態をコピー</button>
         <button class="reset-btn" style="background:#f39c12;margin-top:8px;" onclick="saveStates()">保存</button>
@@ -100,8 +100,8 @@
       <div class="bench-area">
         <button class="reset-btn" onclick="movePlayersToFormation(4)">ピッチ内選手を初期配置に戻す</button>
         <div style="margin-top:8px; display:flex; gap:4px;">
-          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation4231(4)">4-2-3-1</button>
-          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation442(4)">4-4-2</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1; min-width:70px; white-space:nowrap;" onclick="setFormation4231(4)">4-2-3-1</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1; min-width:70px; white-space:nowrap;" onclick="setFormation442(4)">4-4-2</button>
         </div>
         <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper(4)">↑上の状態をコピー</button>
         <button class="reset-btn" style="background:#f39c12;margin-top:8px;" onclick="saveStates()">保存</button>
@@ -187,12 +187,12 @@ const FORMATION_442 = [
   { id: 3, x: 38, y: 75 },   // CB
   { id: 4, x: 62, y: 75 },   // CB
   { id: 5, x: 83, y: 75 },   // LB
-  { id: 6, x: 38, y: 50 },   // CM
-  { id: 7, x: 62, y: 50 },   // CM
-  { id: 8, x: 17, y: 50 },   // LM
-  { id: 9, x: 83, y: 50 },   // RM
-  { id: 10, x: 38, y: 25 },  // FW
-  { id: 11, x: 62, y: 25 }   // FW
+  { id: 6, x: 25, y: 52 },   // CM
+  { id: 7, x: 75, y: 52 },   // CM
+  { id: 8, x: 17, y: 35 },   // LM
+  { id: 9, x: 83, y: 35 },   // RM
+  { id: 10, x: 38, y: 18 },  // FW
+  { id: 11, x: 62, y: 18 }   // FW
 ];
 
 const FORMATION_352 = [
@@ -877,5 +877,3 @@ renderAll();
 </body>
 
 </html>
-
-
