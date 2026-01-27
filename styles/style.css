@@ -40,19 +40,7 @@ body {
       border-top: 3px solid #fff;
       z-index: 1;
     }
-    .field .center-semicircle {
-      position: absolute;
-      left: 50%;
-      top: 25%;
-      width: 120px;
-      height: 120px;
-      border: 3px solid #fff;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 2;
-      background: none;
-      pointer-events: none;
-    }
+
     .field .goal-area {
       position: absolute;
       left: 50%;
@@ -312,3 +300,4 @@ body {
   z-index: 20;
   pointer-events: none;
 }
+
