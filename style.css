@@ -32,27 +32,7 @@ body {
       box-shadow: 0 4px 16px #0002;
       overflow: hidden;
     }
-    .field .half-line {
-      position: absolute;
-      left: 0; right: 0;
-      top: 25%;
-      height: 0;
-      border-top: 3px solid #fff;
-      z-index: 1;
-    }
-    .field .center-semicircle {
-      position: absolute;
-      left: 50%;
-      top: 25%;
-      width: 120px;
-      height: 120px;
-      border: 3px solid #fff;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 2;
-      background: none;
-      pointer-events: none;
-    }
+ 
     .field .goal-area {
       position: absolute;
       left: 50%;
@@ -301,3 +281,4 @@ body {
       .bench-area { min-width: unset; padding: 8px 2px; }
       .reset-btn { font-size: 0.95em; padding: 7px 10px; }
     }
+
