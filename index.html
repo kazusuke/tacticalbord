@@ -22,6 +22,10 @@
       </div>
       <div class="bench-area">
         <button class="reset-btn" onclick="movePlayersToFormation(1)">ピッチ内選手を初期配置に戻す</button>
+        <div style="margin-top:8px; display:flex; gap:4px;">
+          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation4231(1)">4-2-3-1</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation442(1)">4-4-2</button>
+        </div>
         <button class="reset-btn" style="background:#f39c12;margin-top:8px;" onclick="saveStates()">保存</button>
         <div class="bench-title">控え選手</div>
         <div class="bench-list" id="bench1"></div>
@@ -43,6 +47,10 @@
       </div>
       <div class="bench-area">
         <button class="reset-btn" onclick="movePlayersToFormation(2)">ピッチ内選手を初期配置に戻す</button>
+        <div style="margin-top:8px; display:flex; gap:4px;">
+          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation4231(2)">4-2-3-1</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation442(2)">4-4-2</button>
+        </div>
         <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper(2)">↑上の状態をコピー</button>
         <button class="reset-btn" style="background:#f39c12;margin-top:8px;" onclick="saveStates()">保存</button>
         <div class="bench-title">控え選手</div>
@@ -65,6 +73,10 @@
       </div>
       <div class="bench-area">
         <button class="reset-btn" onclick="movePlayersToFormation(3)">ピッチ内選手を初期配置に戻す</button>
+        <div style="margin-top:8px; display:flex; gap:4px;">
+          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation4231(3)">4-2-3-1</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation442(3)">4-4-2</button>
+        </div>
         <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper(3)">↑上の状態をコピー</button>
         <button class="reset-btn" style="background:#f39c12;margin-top:8px;" onclick="saveStates()">保存</button>
         <div class="bench-title">控え選手</div>
@@ -87,6 +99,10 @@
       </div>
       <div class="bench-area">
         <button class="reset-btn" onclick="movePlayersToFormation(4)">ピッチ内選手を初期配置に戻す</button>
+        <div style="margin-top:8px; display:flex; gap:4px;">
+          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation4231(4)">4-2-3-1</button>
+          <button class="reset-btn" style="background:#9b59b6; flex:1;" onclick="setFormation442(4)">4-4-2</button>
+        </div>
         <button class="reset-btn" style="background:#2ecc71;margin-top:8px;" onclick="copyFromUpper(4)">↑上の状態をコピー</button>
         <button class="reset-btn" style="background:#f39c12;margin-top:8px;" onclick="saveStates()">保存</button>
         <div class="bench-title">控え選手</div>
@@ -171,12 +187,12 @@ const FORMATION_442 = [
   { id: 3, x: 38, y: 75 },   // CB
   { id: 4, x: 62, y: 75 },   // CB
   { id: 5, x: 83, y: 75 },   // LB
-  { id: 6, x: 38, y: 52 },   // CM
-  { id: 7, x: 62, y: 52 },   // CM
-  { id: 8, x: 22, y: 35 },   // LM
-  { id: 9, x: 50, y: 35 },   // RM
-  { id: 10, x: 78, y: 35 },  // FW
-  { id: 11, x: 50, y: 18 }   // FW
+  { id: 6, x: 25, y: 52 },   // CM
+  { id: 7, x: 75, y: 52 },   // CM
+  { id: 8, x: 17, y: 35 },   // LM
+  { id: 9, x: 83, y: 35 },   // RM
+  { id: 10, x: 38, y: 18 },  // FW
+  { id: 11, x: 62, y: 18 }   // FW
 ];
 
 const FORMATION_352 = [
@@ -408,14 +424,14 @@ function render(idx) {
   });
 }
 
-// 合計出場時間を計算して表示する関数（出場時間の長い順に並べる）
+// 合計出場時間を計算して表示する関数(出場時間の長い順に並べる)
 function showTotalPlayTime() {
   // ここで一度内容をクリア
   document.getElementById('total-time-area').innerHTML = '';
 
   // 各フィールドで出場している選手IDを集計
   const playerTimes = {};
-  // 1フィールドの出場時間（分）
+  // 1フィールドの出場時間(分)
   const timePerField = 15;
   // 各フィールドで重複なくカウント
   for (let i = 0; i < 4; i++) {
@@ -589,8 +605,8 @@ function onTouchStartPlayer(e, idx) {
   document.addEventListener('touchend', up, {passive:false});
 }
 
-// タッチ操作（タップで移動は消去）
-// タッチ操作（タップで移動は消去）
+// タッチ操作(タップで移動は消去)
+// タッチ操作(タップで移動は消去)
 function onTouchStartBench(e, idx) {
   e.preventDefault();
   const pid = +e.target.getAttribute('data-id');
@@ -751,17 +767,18 @@ function moveToBench(pid, idx) {
 // 状態を保存
 function saveStates() {
   localStorage.setItem('formationStates', JSON.stringify(states));
+  alert('保存しました');
 }
 
-// 上の状態をコピーする関数（任意のidxに対応）
+// 上の状態をコピーする関数(任意のidxに対応)
 function copyFromUpper(idx) {
   if (idx <= 1) return; // 一番上はコピー元がない
-  // states[idx-2]（上のボード）の状態をstates[idx-1]（下のボード）にコピー
+  // states[idx-2](上のボード)の状態をstates[idx-1](下のボード)にコピー
   states[idx-1].playersOnField = [...states[idx-2].playersOnField];
   states[idx-1].playerPositions = JSON.parse(JSON.stringify(states[idx-2].playerPositions));
   states[idx-1].suspensionPlayers = [...states[idx-2].suspensionPlayers];
 
-  // 下のボード（idx）を再描画
+  // 下のボード(idx)を再描画
   render(idx);
 
   // 状態を保存
@@ -783,41 +800,32 @@ function loadStates() {
   }
 }
 
-// 合計出場時間を計算して表示する関数
-function showTotalPlayTime() {
-  // ここで一度内容をクリア
-  document.getElementById('total-time-area').innerHTML = '';
+// フォーメーション変更関数
+function setFormation4231(idx) {
+  const state = states[idx-1];
+  state.playersOnField = [...FORMATION_4231.map(p=>p.id)];
+  state.playerPositions = {};
+  FORMATION_4231.forEach(p=>state.playerPositions[p.id]={x:p.x,y:p.y});
+  render(idx);
+  saveStates();
+}
 
-  // 各フィールドで出場している選手IDを集計
-  const playerTimes = {};
-  // 1フィールドの出場時間（分）
-  const timePerField = 15;
-  // 各フィールドで重複なくカウント
-  for (let i = 0; i < 4; i++) {
-    // そのフィールドで出場している選手IDを一意に
-    const uniquePids = Array.from(new Set(states[i].playersOnField));
-    uniquePids.forEach(pid => {
-      playerTimes[pid] = (playerTimes[pid] || 0) + timePerField;
-    });
-  }
-  // 出場時間の長い順にソート
-  const sortedPlayers = [...PLAYERS].sort((a, b) => {
-    const ta = playerTimes[a.id] || 0;
-    const tb = playerTimes[b.id] || 0;
-    return tb - ta;
-  });
+function setFormation442(idx) {
+  const state = states[idx-1];
+  state.playersOnField = [...FORMATION_442.map(p=>p.id)];
+  state.playerPositions = {};
+  FORMATION_442.forEach(p=>state.playerPositions[p.id]={x:p.x,y:p.y});
+  render(idx);
+  saveStates();
+}
 
-  let html = '<table style="margin:0 auto; border-collapse:collapse;"><tr><th style=\'padding:4px 12px;\'>背番号</th><th style=\'padding:4px 12px;\'>名前</th><th style=\'padding:4px 12px;\'>合計出場時間</th></tr>';
-  sortedPlayers.forEach(p => {
-    const min = playerTimes[p.id] || 0;
-    html += `<tr>
-      <td style='padding:4px 12px; text-align:center;'>${p.number}</td>
-      <td style='padding:4px 12px;'>${p.name}</td>
-      <td style='padding:4px 12px; text-align:center;'>${min}分</td>
-    </tr>`;
-  });
-  html += '</table>';
-  document.getElementById('total-time-area').innerHTML = html;
+function setFormation352(idx) {
+  const state = states[idx-1];
+  state.playersOnField = [...FORMATION_352.map(p=>p.id)];
+  state.playerPositions = {};
+  FORMATION_352.forEach(p=>state.playerPositions[p.id]={x:p.x,y:p.y});
+  render(idx);
+  saveStates();
 }
 
 // フォーメーション変更や編集後に保存
@@ -834,7 +842,7 @@ function movePlayersToFormation(idx) {
   // 新しいポジション格納用
   const newPositions = {};
 
-  // 各選手を一番近い初期配置に割り当てる（重複OK）
+  // 各選手を一番近い初期配置に割り当てる(重複OK)
   fieldPlayers.forEach(pid => {
     const curPos = state.playerPositions[pid] || { x: 50, y: 50 };
     // 最も近い初期配置を探す
@@ -857,22 +865,6 @@ function movePlayersToFormation(idx) {
   render(idx);
   saveStates();
 }
-function setFormation442(idx) {
-  const state = states[idx-1];
-  state.playersOnField = [...FORMATION_442.map(p=>p.id)];
-  state.playerPositions = {};
-  FORMATION_442.forEach(p=>state.playerPositions[p.id]={x:p.x,y:p.y});
-  render(idx);
-  saveStates();
-}
-function setFormation352(idx) {
-  const state = states[idx-1];
-  state.playersOnField = [...FORMATION_352.map(p=>p.id)];
-  state.playerPositions = {};
-  FORMATION_352.forEach(p=>state.playerPositions[p.id]={x:p.x,y:p.y});
-  render(idx);
-  saveStates();
-}
 
 // 編集やドラッグ＆ドロップ後にもsaveStates()を呼ぶと良い
 
@@ -885,4 +877,3 @@ renderAll();
 </body>
 
 </html>
-
