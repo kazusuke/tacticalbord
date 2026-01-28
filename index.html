@@ -213,22 +213,26 @@ let states = [
   {
     playersOnField: [...FORMATION_4231.map(p=>p.id)],
     playerPositions: (()=>{let o={};FORMATION_4231.forEach(p=>o[p.id]={x:p.x,y:p.y});return o;})(),
-    suspensionPlayers: [...DEFAULT_SUSPENSIONS]
+    suspensionPlayers: [...DEFAULT_SUSPENSIONS],
+    currentFormation: FORMATION_4231
   },
   {
     playersOnField: [...FORMATION_4231.map(p=>p.id)],
     playerPositions: (()=>{let o={};FORMATION_4231.forEach(p=>o[p.id]={x:p.x,y:p.y});return o;})(),
-    suspensionPlayers: [...DEFAULT_SUSPENSIONS]
+    suspensionPlayers: [...DEFAULT_SUSPENSIONS],
+    currentFormation: FORMATION_4231
   },
   {
     playersOnField: [...FORMATION_4231.map(p=>p.id)],
     playerPositions: (()=>{let o={};FORMATION_4231.forEach(p=>o[p.id]={x:p.x,y:p.y});return o;})(),
-    suspensionPlayers: [...DEFAULT_SUSPENSIONS]
+    suspensionPlayers: [...DEFAULT_SUSPENSIONS],
+    currentFormation: FORMATION_4231
   },
   {
     playersOnField: [...FORMATION_4231.map(p=>p.id)],
     playerPositions: (()=>{let o={};FORMATION_4231.forEach(p=>o[p.id]={x:p.x,y:p.y});return o;})(),
-    suspensionPlayers: [...DEFAULT_SUSPENSIONS]
+    suspensionPlayers: [...DEFAULT_SUSPENSIONS],
+    currentFormation: FORMATION_4231
   }
 ];
 
@@ -777,6 +781,7 @@ function copyFromUpper(idx) {
   states[idx-1].playersOnField = [...states[idx-2].playersOnField];
   states[idx-1].playerPositions = JSON.parse(JSON.stringify(states[idx-2].playerPositions));
   states[idx-1].suspensionPlayers = [...states[idx-2].suspensionPlayers];
+  states[idx-1].currentFormation = states[idx-2].currentFormation;
 
   // 下のボード(idx)を再描画
   render(idx);
@@ -795,6 +800,8 @@ function loadStates() {
       states[i].playersOnField = loaded[i].playersOnField;
       states[i].playerPositions = loaded[i].playerPositions;
       states[i].suspensionPlayers = loaded[i].suspensionPlayers;
+      // currentFormationが保存されていない場合はデフォルトを使う
+      states[i].currentFormation = loaded[i].currentFormation || FORMATION_4231;
     }
     renderAll();
   }
@@ -806,6 +813,7 @@ function setFormation4231(idx) {
   state.playersOnField = [...FORMATION_4231.map(p=>p.id)];
   state.playerPositions = {};
   FORMATION_4231.forEach(p=>state.playerPositions[p.id]={x:p.x,y:p.y});
+  state.currentFormation = FORMATION_4231;
   render(idx);
   saveStates();
 }
@@ -815,6 +823,7 @@ function setFormation442(idx) {
   state.playersOnField = [...FORMATION_442.map(p=>p.id)];
   state.playerPositions = {};
   FORMATION_442.forEach(p=>state.playerPositions[p.id]={x:p.x,y:p.y});
+  state.currentFormation = FORMATION_442;
   render(idx);
   saveStates();
 }
@@ -824,6 +833,7 @@ function setFormation352(idx) {
   state.playersOnField = [...FORMATION_352.map(p=>p.id)];
   state.playerPositions = {};
   FORMATION_352.forEach(p=>state.playerPositions[p.id]={x:p.x,y:p.y});
+  state.currentFormation = FORMATION_352;
   render(idx);
   saveStates();
 }
@@ -831,7 +841,8 @@ function setFormation352(idx) {
 // フォーメーション変更や編集後に保存
 function movePlayersToFormation(idx) {
   const state = states[idx-1];
-  const formation = FORMATION_4231;
+  // 選択中のフォーメーションを使用
+  const formation = state.currentFormation;
 
   // 初期配置の座標リスト
   const formationPositions = formation.map(p => ({ x: p.x, y: p.y }));
@@ -877,4 +888,3 @@ renderAll();
 </body>
 
 </html>
-
