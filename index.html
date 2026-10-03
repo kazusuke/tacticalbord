@@ -264,14 +264,24 @@ function renderAll() {
   render(4);
   showTotalPlayTime();
 }
+// 名簿(PLAYERS)に存在しない選手ID(退団・削除済み)を状態から取り除く
+function sanitizeState(state) {
+  const valid = id => PLAYERS.some(p => p.id === id);
+  state.playersOnField = (state.playersOnField || []).filter(valid);
+  state.suspensionPlayers = (state.suspensionPlayers || []).filter(valid);
+  Object.keys(state.playerPositions || {}).forEach(k => {
+    if (!valid(+k)) delete state.playerPositions[k];
+  });
+}
 function render(idx) {
   const state = states[idx-1];
+  sanitizeState(state);
   const field = document.getElementById('field'+idx);
   field.querySelectorAll('.player').forEach(e=>e.remove());
   const fw = field.clientWidth, fh = field.clientHeight;
   state.playersOnField.forEach(pid=>{
     const p = PLAYERS.find(x=>x.id===pid);
-    const pos = state.playerPositions[pid];
+    const pos = state.playerPositions[pid] || {x:50,y:50};
     const div = document.createElement('div');
     div.className = 'player';
     div.setAttribute('draggable', true);
