@@ -888,6 +888,13 @@ function movePlayersToFormation(idx) {
 // 編集やドラッグ＆ドロップ後にもsaveStates()を呼ぶと良い
 
 // ページ読み込み時に復元
+// iOS: 選手の長押しで文字選択/コールアウトが出ないようにする
+['selectstart','contextmenu'].forEach(type=>{
+  document.addEventListener(type, e=>{
+    const t = e.target.nodeType === 1 ? e.target : e.target.parentElement;
+    if (t && t.closest && t.closest('.player, .bench-player, .suspension-player, #custom-menu')) e.preventDefault();
+  });
+});
 window.addEventListener('DOMContentLoaded', loadStates);
 
 window.addEventListener('resize', renderAll);
