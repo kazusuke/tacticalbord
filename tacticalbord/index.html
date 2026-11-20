@@ -537,6 +537,7 @@ function onDragOverBench(e, idx) { e.preventDefault(); }
 function onDropBench(e, idx) {
   e.preventDefault();
   const state = states[idx-1];
+  const wasFromSuspension = dragFrom === 'suspension';
   if (dragFrom === 'field') {
     state.playersOnField = state.playersOnField.filter(id=>id!==dragPlayerId);
     delete state.playerPositions[dragPlayerId];
@@ -544,6 +545,7 @@ function onDropBench(e, idx) {
     state.suspensionPlayers = state.suspensionPlayers.filter(id=>id!==dragPlayerId);
   }
   render(idx);
+  if (idx === 1 && wasFromSuspension) syncSuspensionsFromField1();
 }
 
 // 出場停止エリアへのドロップ
@@ -555,6 +557,7 @@ function onDropSuspension(e, idx) {
     state.suspensionPlayers.push(dragPlayerId);
   }
   render(idx);
+  if (idx === 1) syncSuspensionsFromField1();
 }
 
 // タッチ操作
@@ -679,6 +682,7 @@ document.getElementById('menu-to-bench').onclick = function() {
     state.suspensionPlayers = state.suspensionPlayers.filter(id=>id!==pid);
   }
   render(idx);
+  if (idx === 1 && from === 'suspension') syncSuspensionsFromField1();
   hideCustomMenu();
 };
 document.getElementById('menu-to-suspension').onclick = function() {
@@ -691,6 +695,7 @@ document.getElementById('menu-to-suspension').onclick = function() {
       delete state.playerPositions[pid];
     }
     render(idx);
+    if (idx === 1) syncSuspensionsFromField1();
   }
   hideCustomMenu();
 };
@@ -739,12 +744,29 @@ function moveToSuspension(pid, idx) {
   if (!state.suspensionPlayers.includes(pid)) {
     state.suspensionPlayers.push(pid);
     render(idx);
+    if (idx === 1) syncSuspensionsFromField1();
   }
 }
 function moveToBench(pid, idx) {
   const state = states[idx-1];
   state.suspensionPlayers = state.suspensionPlayers.filter(id=>id!==pid);
   render(idx);
+  if (idx === 1) syncSuspensionsFromField1();
+}
+
+// フィールド1の出場停止を2〜4に同期
+function syncSuspensionsFromField1() {
+  const suspensions = [...states[0].suspensionPlayers];
+  for (let i = 1; i < 4; i++) {
+    states[i].suspensionPlayers = [...suspensions];
+    suspensions.forEach(pid => {
+      if (states[i].playersOnField.includes(pid)) {
+        states[i].playersOnField = states[i].playersOnField.filter(id => id !== pid);
+        delete states[i].playerPositions[pid];
+      }
+    });
+    render(i + 1);
+  }
 }
 
 // 状態を保存
