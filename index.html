@@ -160,7 +160,7 @@ const PLAYERS = [
   { id: 15, name: '有田', number: 15, positions: ['CDM'] },
   { id: 22, name: '田中健', number:40, positions: ['MF'] },
   { id: 23, name: '桑田', number: 99, positions: ['CDM'] },
-  { id: 25, name: '川上', number: 99, positions: ['CDM'] },
+  { id: 25, name: '川村', number: 99, positions: ['CDM'] },
   { id: 24, name: '藤原', number: 88, positions: ['CDM'] }
 ];
 
@@ -800,9 +800,9 @@ function moveToBench(pid, idx) {
 }
 
 // 状態を保存
-function saveStates() {
+function saveStates(silent) {
   localStorage.setItem('formationStates', JSON.stringify(states));
-  alert('保存しました');
+  if (silent !== true) alert('保存しました');
 }
 
 // 上の状態をコピーする関数(任意のidxに対応)
@@ -817,8 +817,8 @@ function copyFromUpper(idx) {
   // 下のボード(idx)を再描画
   render(idx);
 
-  // 状態を保存
-  saveStates();
+  // 状態を保存(ポップアップなし)
+  saveStates(true);
 }
 
 // 状態を復元
