@@ -259,11 +259,15 @@ document.getElementById('edit-form').onsubmit = function(e) {
 };
 
 function renderAll() {
-  render(1);
-  render(2);
-  render(3);
-  render(4);
+  render(1, true);
+  render(2, true);
+  render(3, true);
+  render(4, true);
   showTotalPlayTime();
+}
+// 出場停止(=今回の試合に出場しないメンバー)は1番目のフィールドで指定し、2~4では共通で非表示にする
+function getSuspended() {
+  return states[0].suspensionPlayers;
 }
 // 名簿(PLAYERS)に存在しない選手ID(退団・削除済み)を状態から取り除く
 function sanitizeState(state) {
@@ -274,9 +278,21 @@ function sanitizeState(state) {
     if (!valid(+k)) delete state.playerPositions[k];
   });
 }
-function render(idx) {
+function render(idx, noCascade) {
   const state = states[idx-1];
   sanitizeState(state);
+  if (idx > 1) {
+    // 1番目の出場停止選手を引き継ぎ、ピッチ上からも除外
+    state.suspensionPlayers = [...getSuspended()];
+    state.playersOnField = state.playersOnField.filter(id=>!state.suspensionPlayers.includes(id));
+    Object.keys(state.playerPositions).forEach(k=>{
+      if (state.suspensionPlayers.includes(+k)) delete state.playerPositions[k];
+    });
+  }
+  const suspTitle = document.querySelector('#main'+idx+' .suspension-title');
+  const suspList = document.getElementById('suspension'+idx);
+  if (suspTitle) suspTitle.style.display = idx === 1 ? '' : 'none';
+  if (suspList) suspList.style.display = idx === 1 ? '' : 'none';
   const field = document.getElementById('field'+idx);
   field.querySelectorAll('.player').forEach(e=>e.remove());
   const fw = field.clientWidth, fh = field.clientHeight;
@@ -395,7 +411,7 @@ function render(idx) {
     div.addEventListener('touchmove', function() { clearTimeout(timer); });
     div.addEventListener('contextmenu', e=>{
       e.preventDefault();
-      moveToSuspension(p.id, idx);
+      if (idx === 1) moveToSuspension(p.id, idx);
     });
     bench.appendChild(div);
   });
@@ -435,6 +451,12 @@ function render(idx) {
     });
     suspension.appendChild(div);
   });
+
+  // 1番目の出場停止変更を2~4へ反映
+  if (idx === 1 && !noCascade) {
+    render(2, true); render(3, true); render(4, true);
+    showTotalPlayTime();
+  }
 }
 
 // 合計出場時間を計算して表示する関数(出場時間の長い順に並べる)
@@ -455,7 +477,7 @@ function showTotalPlayTime() {
     });
   }
   // 出場時間の長い順にソート
-  const sortedPlayers = [...PLAYERS].sort((a, b) => {
+  const sortedPlayers = PLAYERS.filter(p => !getSuspended().includes(p.id)).sort((a, b) => {
     const ta = playerTimes[a.id] || 0;
     const tb = playerTimes[b.id] || 0;
     return tb - ta;
@@ -674,7 +696,7 @@ function showCustomMenu(x, y, pid, idx, from) {
   // メニュー項目の表示切替
   document.getElementById('menu-to-field').style.display = (from === 'field') ? 'none' : '';
   document.getElementById('menu-to-bench').style.display = (from === 'bench') ? 'none' : '';
-  document.getElementById('menu-to-suspension').style.display = (from === 'suspension') ? 'none' : '';
+  document.getElementById('menu-to-suspension').style.display = (from === 'suspension' || idx !== 1) ? 'none' : '';
   document.getElementById('menu-edit-player').style.display = '';
   menu.style.display = 'block';
   menu.style.left = x + 'px';
@@ -714,7 +736,7 @@ document.getElementById('menu-to-bench').onclick = function() {
 document.getElementById('menu-to-suspension').onclick = function() {
   const { pid, idx, from } = currentLongPress;
   const state = states[idx-1];
-  if (!state.suspensionPlayers.includes(pid)) {
+  if (idx === 1 && !state.suspensionPlayers.includes(pid)) {
     state.suspensionPlayers.push(pid);
     if (from === 'field') {
       state.playersOnField = state.playersOnField.filter(id=>id!==pid);
