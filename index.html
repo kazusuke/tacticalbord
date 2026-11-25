@@ -839,35 +839,43 @@ function loadStates() {
 }
 
 // フォーメーション変更関数
-function setFormation4231(idx) {
+// 必ずピッチ上が11人になるようにする(現在の選手を優先、不足は控えから補充、超過は控えへ)
+function applyFormation(idx, formation) {
   const state = states[idx-1];
-  state.playersOnField = [...FORMATION_4231.map(p=>p.id)];
-  state.playerPositions = {};
-  FORMATION_4231.forEach(p=>state.playerPositions[p.id]={x:p.x,y:p.y});
-  state.currentFormation = FORMATION_4231;
+  const suspended = getSuspended();
+  const available = id => PLAYERS.some(p=>p.id===id) && !suspended.includes(id);
+  const size = formation.length;
+  let members = [...new Set(state.playersOnField)].filter(available).slice(0, size);
+  if (members.length < size) {
+    PLAYERS.forEach(p=>{
+      if (members.length < size && available(p.id) && !members.includes(p.id)) members.push(p.id);
+    });
+  }
+  // 現在位置に近い枠へ重複なく割り当て
+  const pairs = [];
+  members.forEach(pid=>{
+    const cur = state.playerPositions[pid] || {x:50, y:50};
+    formation.forEach((slot, si)=>{
+      pairs.push({pid, si, d: Math.hypot(cur.x-slot.x, cur.y-slot.y)});
+    });
+  });
+  pairs.sort((a,b)=>a.d-b.d);
+  const usedP = new Set(), usedS = new Set(), newPositions = {};
+  pairs.forEach(({pid, si})=>{
+    if (usedP.has(pid) || usedS.has(si)) return;
+    usedP.add(pid); usedS.add(si);
+    newPositions[pid] = {x: formation[si].x, y: formation[si].y};
+  });
+  state.playersOnField = members;
+  state.playerPositions = newPositions;
+  state.currentFormation = formation;
   render(idx);
-  saveStates();
+  saveStates(true);
 }
 
-function setFormation442(idx) {
-  const state = states[idx-1];
-  state.playersOnField = [...FORMATION_442.map(p=>p.id)];
-  state.playerPositions = {};
-  FORMATION_442.forEach(p=>state.playerPositions[p.id]={x:p.x,y:p.y});
-  state.currentFormation = FORMATION_442;
-  render(idx);
-  saveStates();
-}
-
-function setFormation352(idx) {
-  const state = states[idx-1];
-  state.playersOnField = [...FORMATION_352.map(p=>p.id)];
-  state.playerPositions = {};
-  FORMATION_352.forEach(p=>state.playerPositions[p.id]={x:p.x,y:p.y});
-  state.currentFormation = FORMATION_352;
-  render(idx);
-  saveStates();
-}
+function setFormation4231(idx) { applyFormation(idx, FORMATION_4231); }
+function setFormation442(idx) { applyFormation(idx, FORMATION_442); }
+function setFormation352(idx) { applyFormation(idx, FORMATION_352); }
 
 // フォーメーション変更や編集後に保存
 function movePlayersToFormation(idx) {
