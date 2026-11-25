@@ -905,7 +905,7 @@ function movePlayersToFormation(idx) {
   // ポジションを更新
   state.playerPositions = newPositions;
   render(idx);
-  saveStates();
+  saveStates(true);
 }
 
 // 編集やドラッグ＆ドロップ後にもsaveStates()を呼ぶと良い
