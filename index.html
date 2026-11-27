@@ -499,95 +499,61 @@ function showTotalPlayTime() {
 // ドラッグデータ
 let dragPlayerId = null;
 let dragFrom = null;
+let dragIdx = null;
+
+function startDrag(e, idx, from) {
+  const el = e.currentTarget;
+  dragPlayerId = +el.getAttribute('data-id');
+  dragFrom = from;
+  dragIdx = idx;
+  e.dataTransfer.setData('text/plain', String(dragPlayerId));
+  el.classList.add('dragging');
+}
+function endDrag(e) {
+  e.currentTarget.classList.remove('dragging');
+  dragPlayerId = null;
+  dragFrom = null;
+  dragIdx = null;
+}
 
 // フィールド上の選手ドラッグ
-function onDragStartPlayer(e, idx) {
-  dragPlayerId = +e.target.getAttribute('data-id');
-  dragFrom = 'field';
-  e.target.classList.add('dragging');
-  document.getElementById('field'+idx).addEventListener('dragover', ev=>onDragOverField(ev, idx));
-  document.getElementById('field'+idx).addEventListener('drop', ev=>onDropField(ev, idx));
-  document.getElementById('bench'+idx).addEventListener('dragover', ev=>onDragOverBench(ev, idx));
-  document.getElementById('bench'+idx).addEventListener('drop', ev=>onDropBench(ev, idx));
-  document.getElementById('suspension'+idx).addEventListener('dragover', ev=>onDragOverSuspension(ev, idx));
-  document.getElementById('suspension'+idx).addEventListener('drop', ev=>onDropSuspension(ev, idx));
-}
-function onDragEndPlayer(e, idx) {
-  e.target.classList.remove('dragging');
-  document.getElementById('field'+idx).removeEventListener('dragover', ev=>onDragOverField(ev, idx));
-  document.getElementById('field'+idx).removeEventListener('drop', ev=>onDropField(ev, idx));
-  document.getElementById('bench'+idx).removeEventListener('dragover', ev=>onDragOverBench(ev, idx));
-  document.getElementById('bench'+idx).removeEventListener('drop', ev=>onDropBench(ev, idx));
-  document.getElementById('suspension'+idx).removeEventListener('dragover', ev=>onDragOverSuspension(ev, idx));
-  document.getElementById('suspension'+idx).removeEventListener('drop', ev=>onDropSuspension(ev, idx));
-  dragPlayerId = null;
-  dragFrom = null;
-}
+function onDragStartPlayer(e, idx) { startDrag(e, idx, 'field'); }
+function onDragEndPlayer(e) { endDrag(e); }
 
 // 控え選手ドラッグ
-function onDragStartBench(e, idx) {
-  dragPlayerId = +e.target.getAttribute('data-id');
-  dragFrom = 'bench';
-  e.target.classList.add('dragging');
-  document.getElementById('field'+idx).addEventListener('dragover', ev=>onDragOverField(ev, idx));
-  document.getElementById('field'+idx).addEventListener('drop', ev=>onDropField(ev, idx));
-  document.getElementById('bench'+idx).addEventListener('dragover', ev=>onDragOverBench(ev, idx));
-  document.getElementById('bench'+idx).addEventListener('drop', ev=>onDropBench(ev, idx));
-  document.getElementById('suspension'+idx).addEventListener('dragover', ev=>onDragOverSuspension(ev, idx));
-  document.getElementById('suspension'+idx).addEventListener('drop', ev=>onDropSuspension(ev, idx));
-}
-function onDragEndBench(e, idx) {
-  e.target.classList.remove('dragging');
-  document.getElementById('field'+idx).removeEventListener('dragover', ev=>onDragOverField(ev, idx));
-  document.getElementById('field'+idx).removeEventListener('drop', ev=>onDropField(ev, idx));
-  document.getElementById('bench'+idx).removeEventListener('dragover', ev=>onDragOverBench(ev, idx));
-  document.getElementById('bench'+idx).removeEventListener('drop', ev=>onDropBench(ev, idx));
-  document.getElementById('suspension'+idx).removeEventListener('dragover', ev=>onDragOverSuspension(ev, idx));
-  document.getElementById('suspension'+idx).removeEventListener('drop', ev=>onDropSuspension(ev, idx));
-  dragPlayerId = null;
-  dragFrom = null;
-}
+function onDragStartBench(e, idx) { startDrag(e, idx, 'bench'); }
+function onDragEndBench(e) { endDrag(e); }
 
 // 出場停止選手ドラッグ
-function onDragStartSuspension(e, idx) {
-  dragPlayerId = +e.target.getAttribute('data-id');
-  dragFrom = 'suspension';
-  e.target.classList.add('dragging');
-  document.getElementById('bench'+idx).addEventListener('dragover', ev=>onDragOverBench(ev, idx));
-  document.getElementById('bench'+idx).addEventListener('drop', ev=>onDropBench(ev, idx));
-}
-function onDragEndSuspension(e, idx) {
-  e.target.classList.remove('dragging');
-  document.getElementById('bench'+idx).removeEventListener('dragover', ev=>onDragOverBench(ev, idx));
-  document.getElementById('bench'+idx).removeEventListener('drop', ev=>onDropBench(ev, idx));
-  dragPlayerId = null;
-  dragFrom = null;
-}
+function onDragStartSuspension(e, idx) { startDrag(e, idx, 'suspension'); }
+function onDragEndSuspension(e) { endDrag(e); }
 
 // フィールドへのドロップ
-function onDragOverField(e, idx) { e.preventDefault(); }
+// 同じボード内のドラッグだけ受け付ける
+function onDragOverField(e, idx) { if (dragIdx === idx) e.preventDefault(); }
 function onDropField(e, idx) {
   e.preventDefault();
+  if (dragIdx !== idx || (dragFrom !== 'field' && dragFrom !== 'bench')) return;
   const field = document.getElementById('field'+idx);
   const fw = field.clientWidth, fh = field.clientHeight;
+  // ゴールエリア等の子要素や他の選手の上に落としても、フィールド基準の座標にする
+  const rect = field.getBoundingClientRect();
+  const clamp = v => Math.max(0, Math.min(100, v));
+  const x = clamp((e.clientX - rect.left - field.clientLeft)/fw*100);
+  const y = clamp((e.clientY - rect.top - field.clientTop)/fh*100);
   const state = states[idx-1];
-  if (dragFrom === 'bench') { // ★11人制限を撤廃
+  if (dragFrom === 'bench' && !state.playersOnField.includes(dragPlayerId)) { // ★11人制限を撤廃
     state.playersOnField.push(dragPlayerId);
-    let x = e.offsetX/fw*100, y = e.offsetY/fh*100;
-    const p = PLAYERS.find(x=>x.id===dragPlayerId);
-    if (p.positions.includes('GK')) y = 95;
-    state.playerPositions[dragPlayerId] = {x, y};
-  } else if (dragFrom === 'field') {
-    let x = e.offsetX/fw*100, y = e.offsetY/fh*100;
-    state.playerPositions[dragPlayerId] = {x, y};
   }
+  state.playerPositions[dragPlayerId] = {x, y};
   render(idx);
 }
 
 // 控えエリアへのドロップ
-function onDragOverBench(e, idx) { e.preventDefault(); }
+function onDragOverBench(e, idx) { if (dragIdx === idx) e.preventDefault(); }
 function onDropBench(e, idx) {
   e.preventDefault();
+  if (dragIdx !== idx) return;
   const state = states[idx-1];
   if (dragFrom === 'field') {
     state.playersOnField = state.playersOnField.filter(id=>id!==dragPlayerId);
@@ -599,15 +565,27 @@ function onDropBench(e, idx) {
 }
 
 // 出場停止エリアへのドロップ
-function onDragOverSuspension(e, idx) { e.preventDefault(); }
+function onDragOverSuspension(e, idx) { if (dragIdx === idx) e.preventDefault(); }
 function onDropSuspension(e, idx) {
   e.preventDefault();
+  if (dragIdx !== idx) return;
   const state = states[idx-1];
-  if (dragFrom === 'bench') {
+  if (dragFrom === 'bench' && !state.suspensionPlayers.includes(dragPlayerId)) {
     state.suspensionPlayers.push(dragPlayerId);
   }
   render(idx);
 }
+
+// ドロップ先のイベントは最初に1回だけ登録する
+[1,2,3,4].forEach(idx=>{
+  [['field', onDragOverField, onDropField],
+   ['bench', onDragOverBench, onDropBench],
+   ['suspension', onDragOverSuspension, onDropSuspension]].forEach(([name, over, drop])=>{
+    const el = document.getElementById(name+idx);
+    el.addEventListener('dragover', ev=>over(ev, idx));
+    el.addEventListener('drop', ev=>drop(ev, idx));
+  });
+});
 
 // タッチ操作
 function onTouchStartPlayer(e, idx) {
